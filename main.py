@@ -39,6 +39,20 @@ def nextGeneration(grid):
 
   return next_gen
 
+def randomGeneration():
+  random_grid = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
+
+  cur_row = 0
+
+  for row in random_grid:
+    for col in range(len(row)):
+      if random.randint(0, 10) > 4:
+        random_grid[cur_row][col] = 1
+
+    cur_row += 1
+
+  return random_grid
+
 current_path = os.path.dirname(__file__)
 resource_path = os.path.join(current_path, 'resources')
 
@@ -57,15 +71,6 @@ class Status:
   LIVE = 1
 
 current_gen = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
-
-cur_row = 0
-
-for row in current_gen:
-  for col in range(len(row)):
-    if random.randint(0, 10) > 4:
-      current_gen[cur_row][col] = 1
-
-  cur_row += 1
 
 LIVE_CELL = pygame.image.load(os.path.join(resource_path, 'live.png'))
 DEAD_CELL = pygame.image.load(os.path.join(resource_path, 'dead.png'))
@@ -94,9 +99,29 @@ while running:
     if event.type == pygame.QUIT:
       running = False
 
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(start):
+      mouse_x, mouse_y = event.pos
+
+      while mouse_x % 10 != 0:
+        mouse_x -= 1
+
+      while mouse_y % 10 != 0:
+        mouse_y -= 1
+
+      if current_gen[int(mouse_y/10)][int(mouse_x/10)] == Status.LIVE:
+        current_gen[int(mouse_y/10)][int(mouse_x/10)] = Status.DEAD
+      else:
+        current_gen[int(mouse_y/10)][int(mouse_x/10)] = Status.LIVE
+
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_SPACE:
         start = not(start)
+
+      if event.key == pygame.K_r:
+        current_gen = randomGeneration()
+
+      if event.key == pygame.K_c:
+        current_gen = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
 
   if start:
     current_gen = nextGeneration(current_gen)
