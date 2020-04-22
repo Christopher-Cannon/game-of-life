@@ -6,7 +6,7 @@ from os import path
 
 def nextGeneration(grid):
   # Create a blank grid to write to
-  next_gen = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
+  next_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
   # Neighbour cell coordinates
   neighbours = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
   cur_row = 0
@@ -40,7 +40,7 @@ def nextGeneration(grid):
   return next_gen
 
 def randomGeneration():
-  random_grid = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
+  random_grid = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
 
   cur_row = 0
 
@@ -59,9 +59,9 @@ resource_path = os.path.join(current_path, 'resources')
 pygame.init()
 clock = pygame.time.Clock()
 
-WIDTH = 500
-HEIGHT = 500
-WAIT_TIME = 125
+WIDTH = 1200
+HEIGHT = 800
+WAIT_TIME = 75
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Life")
@@ -70,7 +70,7 @@ class Status:
   DEAD = 0
   LIVE = 1
 
-current_gen = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
+current_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
 
 LIVE_CELL = pygame.image.load(os.path.join(resource_path, 'live.png'))
 DEAD_CELL = pygame.image.load(os.path.join(resource_path, 'dead.png'))
@@ -102,16 +102,10 @@ while running:
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(start):
       mouse_x, mouse_y = event.pos
 
-      while mouse_x % 10 != 0:
-        mouse_x -= 1
-
-      while mouse_y % 10 != 0:
-        mouse_y -= 1
-
-      if current_gen[int(mouse_y/10)][int(mouse_x/10)] == Status.LIVE:
-        current_gen[int(mouse_y/10)][int(mouse_x/10)] = Status.DEAD
+      if current_gen[mouse_y//10][mouse_x//10] == Status.LIVE:
+        current_gen[mouse_y//10][mouse_x//10] = Status.DEAD
       else:
-        current_gen[int(mouse_y/10)][int(mouse_x/10)] = Status.LIVE
+        current_gen[mouse_y//10][mouse_x//10] = Status.LIVE
 
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_SPACE:
@@ -121,7 +115,7 @@ while running:
         current_gen = randomGeneration()
 
       if event.key == pygame.K_c:
-        current_gen = [[0 for x in range(int(WIDTH/10))] for y in range(int(HEIGHT/10))]
+        current_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
 
   if start:
     current_gen = nextGeneration(current_gen)
