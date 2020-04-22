@@ -3,10 +3,10 @@ import random
 from enum import Enum
 import os.path
 from os import path
-
+# Update grid with next generation
 def nextGeneration(grid):
   # Create a blank grid to write to
-  next_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
+  next_gen = blankGrid()
   # Neighbour cell coordinates
   neighbours = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
   cur_row = 0
@@ -38,9 +38,9 @@ def nextGeneration(grid):
     cur_row += 1
 
   return next_gen
-
+# Generate a grid of random live or dead cells
 def randomGeneration():
-  random_grid = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
+  random_grid = blankGrid()
 
   cur_row = 0
 
@@ -52,9 +52,16 @@ def randomGeneration():
     cur_row += 1
 
   return random_grid
+# Generate a blank grid
+def blankGrid():
+  return [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
 
+# Where are the cell images stored
 current_path = os.path.dirname(__file__)
 resource_path = os.path.join(current_path, 'resources')
+
+LIVE_CELL = pygame.image.load(os.path.join(resource_path, 'live.png'))
+DEAD_CELL = pygame.image.load(os.path.join(resource_path, 'dead.png'))
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -70,12 +77,11 @@ class Status:
   DEAD = 0
   LIVE = 1
 
-current_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
 
-LIVE_CELL = pygame.image.load(os.path.join(resource_path, 'live.png'))
-DEAD_CELL = pygame.image.load(os.path.join(resource_path, 'dead.png'))
+current_gen = blankGrid()
 
 running = True
+# Simulation started or stopped
 start = False
 
 while running:
@@ -100,12 +106,12 @@ while running:
       running = False
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not(start):
-      mouse_x, mouse_y = event.pos
+      mouse_x, mouse_y = event.pos[0] // 10, event.pos[1] // 10
 
-      if current_gen[mouse_y//10][mouse_x//10] == Status.LIVE:
-        current_gen[mouse_y//10][mouse_x//10] = Status.DEAD
+      if current_gen[mouse_y][mouse_x] == Status.LIVE:
+        current_gen[mouse_y][mouse_x] = Status.DEAD
       else:
-        current_gen[mouse_y//10][mouse_x//10] = Status.LIVE
+        current_gen[mouse_y][mouse_x] = Status.LIVE
 
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_SPACE:
@@ -115,7 +121,7 @@ while running:
         current_gen = randomGeneration()
 
       if event.key == pygame.K_c:
-        current_gen = [[0 for x in range(WIDTH//10)] for y in range(HEIGHT//10)]
+        current_gen = blankGrid()
 
   if start:
     current_gen = nextGeneration(current_gen)
